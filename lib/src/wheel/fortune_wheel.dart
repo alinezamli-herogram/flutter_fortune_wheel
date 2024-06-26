@@ -182,6 +182,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   })  : physics = physics ?? CircularPanPhysics(),
         assert(items.length > 1),
         super(key: key);
+  StreamSubscription<int>? subscription;
 
   @override
   Widget build(BuildContext context) {
@@ -205,16 +206,17 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
     final selectedIndex = useState<int>(0);
 
     useEffect(() {
-      final subscription = selected.listen((event) {
+      subscription?.cancel();
+      subscription = selected.listen((event) {
         selectedIndex.value = event;
         animate();
       }, onError: (e) {
         debugPrint('$e');
       });
-      subscription.onError((e) {
+      subscription?.onError((e) {
         debugPrint('$e');
       });
-      return subscription.cancel;
+      return subscription?.cancel;
     }, []);
 
     final lastVibratedAngle = useRef<double>(0);
