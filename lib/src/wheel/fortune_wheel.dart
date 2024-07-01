@@ -206,19 +206,19 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
     final selectedIndex = useState<int>(0);
 
     useEffect(() {
-      subscription?.cancel();
-      subscription = selected.listen((event) {
-        selectedIndex.value = event;
-        animate();
-      }, onError: (e) {
-        debugPrint('$e');
+      selected.isEmpty.then((value) {
+        subscription = selected.listen((event) {
+          selectedIndex.value = event;
+          animate();
+        }, onError: (e) {
+          debugPrint('$e');
+        });
+        subscription?.onError((e) {
+          debugPrint('$e');
+        });
+        return subscription?.cancel;
       });
-      subscription?.onError((e) {
-        debugPrint('$e');
-      });
-      return subscription?.cancel;
-    }, []);
-
+    });
     final lastVibratedAngle = useRef<double>(0);
 
     return PanAwareBuilder(
