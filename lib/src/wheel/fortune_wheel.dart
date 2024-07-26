@@ -11,12 +11,12 @@ Offset _calculateWheelOffset(BoxConstraints constraints, TextDirection textDirec
   return Offset(offsetX, constraints.maxHeight / 2);
 }
 
-double _calculateSliceAngle(int index, int itemCount) {
+double _calculateSliceAngle(int index, int itemCount, double randomOffset) {
   final anglePerChild = 2 * _math.pi / itemCount;
   final childAngle = anglePerChild * index;
   // first slice starts at 90 degrees, if 0 degrees is at the top.
   // The angle offset puts the center of the first slice at the top.
-  final angleOffset = -(_math.pi / 2 + anglePerChild / 2);
+  final angleOffset = -(_math.pi / (randomOffset) + anglePerChild / 2);
   return childAngle + angleOffset;
 }
 
@@ -149,6 +149,8 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
   /// a section border is crossed.
   final ValueChanged<int>? onFocusItemChanged;
 
+  final double randomOffset;
+
   double _getAngle(double progress) {
     return 2 * _math.pi * rotationCount * progress;
   }
@@ -179,6 +181,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
     PanPhysics? physics,
     this.onFling,
     this.onFocusItemChanged,
+    required this.randomOffset,
   })  : physics = physics ?? CircularPanPhysics(),
         assert(items.length > 1),
         super(key: key);
@@ -192,7 +195,6 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
       if (rotateAnimCtrl.isAnimating) {
         return;
       }
-
       await Future.microtask(() => onAnimationStart?.call());
       await rotateAnimCtrl.forward(from: 0);
       await Future.microtask(() => onAnimationEnd?.call());
@@ -263,7 +265,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
                     for (var i = 0; i < items.length; i++)
                       TransformedFortuneItem(
                         item: items[i],
-                        angle: totalAngle + alignmentOffset + _calculateSliceAngle(i, items.length),
+                        angle: totalAngle + alignmentOffset + _calculateSliceAngle(i, items.length, randomOffset),
                         offset: wheelData.offset,
                       ),
                   ];

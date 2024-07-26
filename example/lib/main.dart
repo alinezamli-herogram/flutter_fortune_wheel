@@ -1,12 +1,12 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 
 import 'common/common.dart';
 import 'router.dart';
-import 'util/configure_non_web.dart'
-    if (dart.library.html) 'util/configure_web.dart';
+import 'util/configure_non_web.dart' if (dart.library.html) 'util/configure_web.dart';
 import 'widgets/widgets.dart';
 
 class ExampleApp extends StatelessWidget {
@@ -63,6 +63,7 @@ class _ExamplePageState extends State<ExamplePage> {
             Expanded(
               child: FortuneWheel(
                 selected: selected.stream,
+                randomOffset: generateRandomValue(),
                 items: [
                   for (var it in items) FortuneItem(child: Text(it)),
                 ],
@@ -73,6 +74,11 @@ class _ExamplePageState extends State<ExamplePage> {
       ),
     );
   }
+}
+
+double generateRandomValue() {
+  final random = Random();
+  return 1.7 + random.nextDouble() * (2.5 - 1.7);
 }
 
 void main() {

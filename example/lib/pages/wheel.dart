@@ -1,10 +1,12 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_fortune_wheel/flutter_fortune_wheel.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
-
 import '../common/common.dart';
 import '../widgets/widgets.dart';
+
+double randomValue = 2;
 
 class FortuneWheelPage extends HookWidget {
   static const kRouteName = 'FortuneWheelPage';
@@ -26,6 +28,8 @@ class FortuneWheelPage extends HookWidget {
     );
 
     void handleRoll() {
+      randomValue = generateRandomValue();
+      print("randomValue $randomValue");
       selected.add(
         roll(Constants.fortuneValues.length),
       );
@@ -46,11 +50,13 @@ class FortuneWheelPage extends HookWidget {
             SizedBox(height: 8),
             Expanded(
               child: FortuneWheel(
+                randomOffset: randomValue,
                 alignment: alignment.value,
                 selected: selected.stream,
                 onAnimationStart: () => isAnimating.value = true,
                 onAnimationEnd: () => isAnimating.value = false,
                 onFling: handleRoll,
+                duration: Duration(seconds: 5),
                 hapticImpact: HapticImpact.heavy,
                 indicators: [
                   FortuneIndicator(
@@ -58,10 +64,7 @@ class FortuneWheelPage extends HookWidget {
                     child: TriangleIndicator(),
                   ),
                 ],
-                items: [
-                  for (var it in Constants.fortuneValues)
-                    FortuneItem(child: Text(it), onTap: () => print(it))
-                ],
+                items: [for (var it in Constants.fortuneValues) FortuneItem(child: Text(it), onTap: () => print(it))],
               ),
             ),
           ],
@@ -69,4 +72,10 @@ class FortuneWheelPage extends HookWidget {
       ),
     );
   }
+}
+
+double generateRandomValue() {
+  final random = Random();
+  const values = [1.7, 2.5];
+  return values[random.nextInt(values.length)];
 }
